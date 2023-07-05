@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Enter extension name",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Enter popup title",
+    "default_icon": "public/icon.png"
+  },
+  "icons": {
+    "16": "public/icon.png",
+    "48": "public/icon.png",
+    "128": "public/icon.png"
+  },
+  "permissions": ["storage"],
+  "options_page": "src/options/options.html",
+  "background": {
+    "service_worker": "src/background/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "js": ["src/contentScript/contentScript.tsx"],
+      "matches": ["https://*/*"]
+    }
+  ]
+}
