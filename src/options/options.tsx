@@ -1,8 +1,4 @@
-import { createRoot } from "react-dom/client";
+import { injectRoot } from "../utils/ReactUtils";
 import { App } from "./App";
-import "./options.css";
 
-const container = document.createElement("div");
-document.querySelector("#root")?.appendChild(container);
-const root = createRoot(container);
-root.render(<App />);
+injectRoot(<App />);

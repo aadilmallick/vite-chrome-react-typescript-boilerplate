@@ -9,6 +9,7 @@
   },
   "icons": {
     "16": "public/icon.png",
+    "32": "public/icon.png",
     "48": "public/icon.png",
     "128": "public/icon.png"
   },
@@ -23,5 +24,6 @@
       "js": ["src/contentScript/contentScript.tsx"],
       "matches": ["https://*/*"]
     }
-  ]
+  ],
+  "description": "Enter description here"
 }
