@@ -50,7 +50,6 @@ abstract class Storage<T extends Record<string, any>> {
   }
 
   private async setup() {
-    console.log("storage", this.storage);
     const data = await this.storage.get(this.getKeys());
     if (!data || Object.keys(data).length === 0) {
       await this.storage.set(this.defaultData);

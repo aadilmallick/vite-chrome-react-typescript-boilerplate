@@ -43,55 +43,80 @@ export function debounce(callback: CallableFunction, delay: number) {
   };
 }
 
-export function createReactiveProxy<T extends Record<string, any>>(
-  state: T,
-  onSet: (state: T) => void
-) {
-  const singleProperty = Object.keys(state)[0] as keyof T;
-  const proxy = new Proxy(state, {
-    set(target, p, newValue, receiver) {
-      if (p === singleProperty) {
-        target[p as keyof T] = newValue;
-        onSet(target);
-      }
-      return Reflect.set(target, p, newValue, receiver);
-    },
-  });
-  return proxy;
-}
-
-const thing = createReactiveProxy({ count: 0 }, (state) => {
-  console.log(state.count);
-});
-
-export function createReactiveFunction<T extends CallableFunction>(
-  func: T,
-  onCall: (argsList: any[]) => void
-) {
-  const proxy = new Proxy(func, {
-    apply(targetFunc, thisArg, argArray) {
-      onCall(argArray);
-      return Reflect.apply(targetFunc, thisArg, argArray);
-    },
-  });
-  return proxy;
-}
-
-export class ObservableStore<T extends CallableFunction> {
-  private observers: Set<T> = new Set();
-  notify(...args: any[]) {
-    this.observers.forEach((observer) => observer(...args));
+export class CustomEventManager<T = any> extends EventTarget {
+  private listener?: EventListenerOrEventListenerObject;
+  constructor(private name: string) {
+    super();
   }
-  notifyAndReturn(...args: any[]) {
-    const returnValues = Array.from(this.observers).map((observer) =>
-      observer(...args)
+
+  onTriggered(callback: (event: Event & { detail: T }) => void) {
+    this.listener = (e) => {
+      callback(e as Event & { detail: T });
+    };
+    this.addEventListener(this.name, this.listener);
+  }
+
+  removeListener() {
+    if (this.listener) this.removeEventListener(this.name, this.listener);
+  }
+
+  dispatch(data: T, eventInitDict?: CustomEventInit<T>) {
+    this.dispatchEvent(
+      new CustomEvent(this.name, { ...eventInitDict, detail: data })
     );
-    return returnValues;
   }
-  addObserver(observer: T) {
-    this.observers.add(observer);
+}
+
+export class CustomEventElementClass<T> {
+  private listener?: EventListener;
+  constructor(
+    private event: CustomEvent<T>,
+    private element: HTMLElement | Window = window
+  ) {}
+
+  listen(cb: (e: CustomEvent<T>) => void) {
+    this.listener = cb as EventListener;
+    this.element.addEventListener(this.event.type, cb as EventListener);
   }
-  removeObserver(observer: T) {
-    this.observers.delete(observer);
+
+  dispatch() {
+    this.element.dispatchEvent(this.event);
+  }
+
+  removeListener() {
+    if (this.listener) {
+      this.element.removeEventListener(this.event.type, this.listener);
+    }
+  }
+}
+
+export class CSSVariablesManager {
+  constructor(private element: HTMLElement) {}
+
+  private formatName(name: string) {
+    if (name.startsWith("--")) {
+      return name;
+    }
+    return `--${name}`;
+  }
+
+  set(name: string, value: string) {
+    this.element.style.setProperty(`--${this.formatName(name)}`, value);
+  }
+
+  get(name: string) {
+    return this.element.style.getPropertyValue(`--${this.formatName(name)}`);
+  }
+}
+
+export class AbortControllerManager {
+  private controller = new AbortController();
+
+  get signal() {
+    return this.controller.signal;
+  }
+
+  abort() {
+    this.controller.abort();
   }
 }
