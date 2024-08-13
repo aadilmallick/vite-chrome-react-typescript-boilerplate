@@ -2,7 +2,6 @@ import viteLogo from "/vite.svg";
 import "./index.css";
 
 function App() {
-  function onClick() {}
   return (
     <>
       <div className="w-[20rem] h-[30rem] p-4">
@@ -10,7 +9,6 @@ function App() {
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
         <h1 className="text-2xl text-purple-400">Vite + React</h1>
-        <button onClick={onClick}>click me</button>
       </div>
     </>
   );
