@@ -85,7 +85,7 @@ abstract class Storage<T extends Record<string, any>> {
   }
 
   async getMultiple<K extends keyof T>(keys: K[]) {
-    return (await this.storage.get(keys)) as Partial<T>;
+    return (await this.storage.get(keys)) as Extract<T, Record<K, any>>;
   }
 
   /**

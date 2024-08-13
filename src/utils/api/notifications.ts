@@ -1,7 +1,6 @@
 // requires "notifications" permission in manifest.json
 
 export default class NotificationModel {
-  static show = chrome.notifications.create.bind(chrome.notifications);
   static showBasicNotification({
     title,
     message,
@@ -31,6 +30,10 @@ export default class NotificationModel {
   clearNotification() {
     chrome.notifications.clear(this.notificationId);
   }
+}
+
+export class NotificationAPI {
+  static show = chrome.notifications.create.bind(chrome.notifications);
 
   static onClick = chrome.notifications.onClicked.addListener.bind(
     chrome.notifications.onClicked

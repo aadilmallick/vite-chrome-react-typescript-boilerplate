@@ -1,22 +1,12 @@
-import NotificationModel from "../utils/api/notifications";
 import { Runtime } from "../utils/api/runtime";
-import { SyncStorage } from "../utils/api/storage";
 
-// chrome.runtime.onInstalled.addListener(({ reason }) => {
-//   console.log("onInstalled...");
-//   const syncStorage = new SyncStorage({
-//     darkMode: false,
-//   });
-//   syncStorage.getStoragePercentageUsed().then((percentage) => {
-//     console.log(`Storage used: ${percentage}%`);
-//   });
-// });
-Runtime.onInstall(({ reason }) => {
-  console.log("onInstalled...");
-  const syncStorage = new SyncStorage({
-    darkMode: false,
-  });
-  syncStorage.getStoragePercentageUsed().then((percentage) => {
-    console.log(`Storage used: ${percentage}%`);
-  });
+Runtime.onInstall({
+  // runs first time you download the extension
+  installCb: async () => {
+    console.log("Extension installed");
+  },
+  // runs every time you update the extension or refresh it
+  updateCb: async () => {
+    console.log("Extension updated");
+  },
 });

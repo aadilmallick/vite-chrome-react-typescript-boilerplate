@@ -15,6 +15,15 @@ export class DOM {
     }
     return el;
   };
+
+  static addElementsToContainer(
+    container: HTMLElement,
+    elements: HTMLElement[]
+  ) {
+    const fragment = document.createDocumentFragment();
+    elements.forEach((el) => fragment.appendChild(el));
+    container.appendChild(fragment);
+  }
 }
 
 HTMLElement.prototype.$ = function (

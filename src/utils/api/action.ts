@@ -8,6 +8,10 @@ export default class Action {
     }
   }
 
+  static openPopup() {
+    chrome.action.openPopup();
+  }
+
   static async setActionTitle(title: string, tabId?: number) {
     await chrome.action.setTitle({ title, tabId });
   }

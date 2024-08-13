@@ -18,6 +18,12 @@ interface Observable<T> {
   update(data: T): void;
 }
 
+export class ConcreteObserver<T> implements Observable<T> {
+  update(data: T) {
+    console.log(data);
+  }
+}
+
 export function createReactiveProxy<T extends Record<string, any>>(
   state: T,
   onSet: (state: T) => void
