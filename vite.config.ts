@@ -16,4 +16,11 @@ const createManifest = (): ManifestV3Export => {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), crx({ manifest: createManifest() })],
+  server: {
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      port: 5173,
+    }
+  }
 });

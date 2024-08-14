@@ -14,6 +14,15 @@ export default class Offscreen {
     return [Offscreen.reasons[reason]] as [chrome.offscreen.Reason];
   }
 
+  static async getOffscreenDocument() {
+    const existingContexts = await chrome.runtime.getContexts({});
+
+    const offscreenDocument = existingContexts.find(
+      (c) => c.contextType === "OFFSCREEN_DOCUMENT"
+    );
+    return offscreenDocument;
+  }
+
   static async setupOffscreenDocument({
     url,
     justification,

@@ -20,3 +20,21 @@ export function useObjectState<T extends Record<string, any>>(
 
   return [state, setPartialState];
 }
+
+export function useGetCurrentTab() {
+  const [tab, setTab] = React.useState<chrome.tabs.Tab | null>(null);
+
+  React.useEffect(() => {
+    async function getCurrentTab() {
+      const [currentTab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      setTab(currentTab);
+    }
+
+    getCurrentTab();
+  }, []);
+
+  return { tab };
+}
