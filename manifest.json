@@ -30,6 +30,5 @@
       "matches": ["https://*/*"]
     }
   ],
-  "description": "Enter description here",
-  "$schema": "https://json.schemastore.org/chrome-manifest"
+  "description": "Enter description here"
 }
