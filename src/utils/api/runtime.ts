@@ -1,28 +1,30 @@
 export const Runtime = {
-  onExtensionLoaded(callback: () => void) {
-    chrome.runtime.onInstalled.addListener(callback);
-  },
-
-  onCleanup(callback: () => void) {
-    chrome.runtime.onSuspend.addListener(callback);
-  },
-
+  /**
+   * This method runs whenever the extension is installed, updated, or chrome is updated
+   * - onAll() : runs first and on every reason for installation.
+   * - installCb() : runs first time you download the extension
+   * - updateCb() : runs every time you update the extension or refresh it
+   * - chromeUpdateCb() : runs every time chrome is updated
+   */
   onInstall({
     installCb,
     updateCb,
     chromeUpdateCb,
-    onExtensionUnInstalledUrl,
+    onExtensionUninstalledUrl,
+    onAll,
   }: {
     installCb?: () => void;
     updateCb?: () => void;
     chromeUpdateCb?: () => void;
-    onExtensionUnInstalledUrl?: string;
+    onAll?: () => void;
+    onExtensionUninstalledUrl?: string;
   }) {
     chrome.runtime.onInstalled.addListener(({ reason }) => {
+      onAll?.();
       switch (reason) {
         case chrome.runtime.OnInstalledReason.INSTALL:
-          onExtensionUnInstalledUrl &&
-            chrome.runtime.setUninstallURL(onExtensionUnInstalledUrl);
+          onExtensionUninstalledUrl &&
+            chrome.runtime.setUninstallURL(onExtensionUninstalledUrl);
           installCb?.();
           break;
         case chrome.runtime.OnInstalledReason.UPDATE:

@@ -9,4 +9,7 @@ Runtime.onInstall({
   updateCb: async () => {
     console.log("Extension updated");
   },
+  onAll: async () => {
+    console.log("Extension loaded");
+  },
 });

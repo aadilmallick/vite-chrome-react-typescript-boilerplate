@@ -1,4 +1,5 @@
 import viteLogo from "/vite.svg";
+import "../utils/style-utils/globals.css";
 import "./index.css";
 
 function App() {

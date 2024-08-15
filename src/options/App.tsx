@@ -1,3 +1,4 @@
+import "../utils/style-utils/globals.css";
 import "./options.css";
 
 export const App = () => {
