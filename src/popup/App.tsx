@@ -1,6 +1,7 @@
 import viteLogo from "/vite.svg";
 import "../utils/style-utils/globals.css";
 import "./index.css";
+import { Button } from "@/components/ui/button";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
         <h1 className="text-2xl text-purple-400">Vite + React</h1>
+        <Button>Click me</Button>
       </div>
     </>
   );

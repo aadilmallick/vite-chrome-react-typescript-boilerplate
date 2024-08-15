@@ -13,6 +13,10 @@ npm install
 npm run dev
 ```
 
+## ShadCN components to add
+
+- `npx shadcn-ui@latest add button`
+
 ## Useful stuff
 
 - https://usehooks-ts.com/react-hook/use-debounce-value

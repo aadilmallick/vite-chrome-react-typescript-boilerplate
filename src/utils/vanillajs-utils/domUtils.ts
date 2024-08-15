@@ -40,16 +40,19 @@ HTMLElement.prototype.$$ = function (
   return this.querySelectorAll(selector);
 };
 
-export function debounce(callback: CallableFunction, delay: number) {
+export function debounce<T extends (...args: any[]) => void>(
+  callback: T,
+  delay: number
+) {
   let timeoutId: ReturnType<Window["setTimeout"]>;
-  return (...args: any[]) => {
+  return ((...args: any[]) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
     timeoutId = window.setTimeout(() => {
       callback(...args);
     }, delay);
-  };
+  }) as T;
 }
 
 export class CustomEventManager<T = any> extends EventTarget {

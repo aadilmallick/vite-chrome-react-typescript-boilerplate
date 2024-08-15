@@ -1,4 +1,4 @@
-import { MessagesOneWay } from "../../utils/api/messages";
+import { MessagesOneWay } from "app/utils/api/messages";
 
 export const tabPayloadChannel = new MessagesOneWay<{
   tabId: number;

@@ -1,9 +1,22 @@
-// requires tab permission
+// requires tabs permission for accessing sensitive properties like url, title, etc
 
-interface TabAudio {
-  toggleMuted(tab: chrome.tabs.Tab): Promise<void>;
-  getMuted(tab: chrome.tabs.Tab): Promise<boolean>;
+interface TabAudioModel {
+  toggleMuted(): Promise<void>;
+  getMuted(): Promise<boolean>;
 }
+
+interface TabZoomModel {
+  setZoom(zoomFactor: number): Promise<void>;
+  getZoom(): Promise<number>;
+  resetZoom(): Promise<void>;
+  onZoomChanged: (
+    callback: (ZoomChangeInfo: chrome.tabs.ZoomChangeInfo) => void
+  ) => void;
+  listener?: (ZoomChangeInfo: chrome.tabs.ZoomChangeInfo) => void;
+
+  removeListener: () => void;
+}
+
 export default class Tabs {
   static async getCurrentTab() {
     const [tab] = await chrome.tabs.query({
@@ -36,7 +49,7 @@ export default class Tabs {
     return await chrome.tabs.query({ windowId });
   }
 
-  static Audio: TabAudio = {
+  static Audio = {
     async toggleMuted(tab: chrome.tabs.Tab) {
       if (!tab.id) throw new Error("Tab id not found");
       await chrome.tabs.update(tab.id, {
@@ -54,6 +67,10 @@ export default class Tabs {
     async setZoom(tabId: number, zoomFactor: number) {
       await chrome.tabs.setZoom(tabId, zoomFactor);
     },
+    async getZoom(tabId: number) {
+      const zoomFactor = await chrome.tabs.getZoom(tabId);
+      return zoomFactor;
+    },
     async resetZoom(tabId: number) {
       await chrome.tabs.setZoom(tabId, 0);
     },
@@ -62,25 +79,50 @@ export default class Tabs {
 
 export class TabModel {
   public tab?: chrome.tabs.Tab;
-  public audio = Tabs.Audio;
-  static instance: TabModel | null = null;
-  constructor(options: chrome.tabs.CreateProperties) {
-    if (TabModel.instance) return TabModel.instance;
-    TabAPI.createTab(options).then((tab) => {
-      this.tab = tab;
-      this.audio.getMuted = this.audio.getMuted.bind(null, this.tab);
-      this.audio.toggleMuted = this.audio.toggleMuted.bind(null, this.tab);
-      TabModel.instance = this;
-    });
+  public audio!: TabAudioModel;
+  public zoom!: TabZoomModel;
+  constructor(tab?: chrome.tabs.Tab) {
+    if (tab) {
+      this.init(tab);
+    }
+  }
+
+  init(tab: chrome.tabs.Tab) {
+    this.tab = tab;
+    this.audio = {
+      getMuted: Tabs.Audio.getMuted.bind(null, this.tab),
+      toggleMuted: Tabs.Audio.toggleMuted.bind(null, this.tab),
+    };
+    this.zoom = {
+      getZoom: Tabs.Zoom.getZoom.bind(null, this.tab.id!),
+      setZoom: Tabs.Zoom.setZoom.bind(null, this.tab.id!),
+      resetZoom: Tabs.Zoom.resetZoom.bind(null, this.tab.id!),
+      onZoomChanged: (
+        callback: (ZoomChangeInfo: chrome.tabs.ZoomChangeInfo) => void
+      ) => {
+        this.zoom.listener = callback;
+        chrome.tabs.onZoomChange.addListener(this.zoom.listener);
+      },
+      removeListener: () => {
+        if (this.zoom.listener) {
+          chrome.tabs.onZoomChange.removeListener(this.zoom.listener);
+        }
+      },
+    };
+  }
+
+  private async create(options: chrome.tabs.CreateProperties) {
+    const tab = await TabAPI.createTab(options);
+    this.init(tab);
   }
 
   async moveToIndex(index: number) {
-    if (!this.tab?.id) return;
+    if (!this.tab?.id) throw new Error("Tab id not found");
     await chrome.tabs.move(this.tab.id, { index });
   }
 
   async remove() {
-    if (!this.tab?.id) return;
+    if (!this.tab?.id) throw new Error("Tab id not found");
     await chrome.tabs.remove(this.tab.id);
   }
 }

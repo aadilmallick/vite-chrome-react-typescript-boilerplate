@@ -1,4 +1,4 @@
-import { Runtime } from "../utils/api/runtime";
+import { Runtime } from "app/utils/api/runtime";
 
 Runtime.onInstall({
   // runs first time you download the extension
