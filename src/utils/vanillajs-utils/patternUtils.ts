@@ -72,3 +72,47 @@ export class ObservableStore<T extends CallableFunction> {
     this.observers.delete(observer);
   }
 }
+
+// export class Command<T> {
+//   constructor(public name: string, public data: T) {}
+
+//   equals(command: Command<T>) {
+//     return this.name === command.name;
+//   }
+
+//   // put all commands for app here
+//   static CommandsMap = {};
+// }
+
+// export class CommandExecutor<T> {
+//   constructor(public command: Command<T>) {}
+//   getExecutor() {
+//     return ((
+//       args: this["command"]["data"],
+//       cb: (args: this["command"]["data"]) => void
+//     ) => {
+//       cb(args);
+//     }).bind(null, this.command.data);
+//   }
+// }
+
+export class Command<T> {
+  constructor(
+    public name: string,
+    public data: T,
+    public cb: (data: T) => void
+  ) {}
+
+  equals(command: Command<T>) {
+    return this.name === command.name;
+  }
+
+  // put all commands for app here
+  static CommandsMap = {};
+}
+
+export class CommandExecutor {
+  static execute<T>(command: Command<T>) {
+    command.cb(command.data);
+  }
+}
