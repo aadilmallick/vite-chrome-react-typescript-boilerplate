@@ -157,8 +157,3 @@ export class LocalStorage<T extends Record<string, any>> {
     window.localStorage.clear();
   }
 }
-
-const localStorage = new LocalStorage<{
-  name: string;
-  age: number;
-}>("userdata:");
