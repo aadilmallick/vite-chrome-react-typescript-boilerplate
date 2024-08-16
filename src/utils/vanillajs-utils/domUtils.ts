@@ -133,7 +133,7 @@ export class AbortControllerManager {
   }
 }
 
-export class LocalStorage<T extends Record<string, any>> {
+export class LocalStorageBrowser<T extends Record<string, any>> {
   constructor(private prefix: string = "") {}
 
   private getKey(key: keyof T & string): string {
