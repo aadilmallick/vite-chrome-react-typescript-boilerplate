@@ -38,7 +38,7 @@
 //   }
 // }
 
-abstract class Storage<T extends Record<string, any>> {
+export abstract class Storage<T extends Record<string, any>> {
   constructor(
     protected defaultData: T,
     protected storage:

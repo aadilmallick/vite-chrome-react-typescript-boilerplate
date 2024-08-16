@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
-import React from "react";
+import React, { useMemo } from "react";
+import type { Storage } from "./api/storage";
 
 export function injectRoot(app: React.ReactNode) {
   const root = document.createElement("div");
@@ -37,4 +38,25 @@ export function useGetCurrentTab() {
   }, []);
 
   return { tab };
+}
+
+export function useChromeStorage<T extends Record<string, any>>(
+  storage: Storage<T>,
+  key: keyof T
+) {
+  const [value, setValue] = React.useState<T[keyof T] | null>(null);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    async function getValue() {
+      setLoading(true);
+      const data = await storage.get(key);
+      setValue(data);
+      setLoading(false);
+    }
+
+    getValue();
+  }, []);
+
+  return { data: value, loading };
 }

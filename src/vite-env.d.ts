@@ -39,3 +39,11 @@ interface HTMLElement {
   $(selector: string): HTMLElement | null;
   $$(selector: string): NodeListOf<HTMLElement>;
 }
+
+type WithKeys<T, V extends keyof T> = {
+  [K in V]: T[K];
+};
+
+type WithoutKeys<T, V extends keyof T> = {
+  [K in Exclude<keyof T, V>]: T[K];
+};
