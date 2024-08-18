@@ -24,21 +24,23 @@ export class DOM {
     elements.forEach((el) => fragment.appendChild(el));
     container.appendChild(fragment);
   }
+
+  static setPrototypes() {
+    HTMLElement.prototype.$ = function (
+      this: HTMLElement,
+      selector: string
+    ): HTMLElement | null {
+      return this.querySelector(selector);
+    };
+
+    HTMLElement.prototype.$$ = function (
+      this: HTMLElement,
+      selector: string
+    ): NodeListOf<HTMLElement> {
+      return this.querySelectorAll(selector);
+    };
+  }
 }
-
-HTMLElement.prototype.$ = function (
-  this: HTMLElement,
-  selector: string
-): HTMLElement | null {
-  return this.querySelector(selector);
-};
-
-HTMLElement.prototype.$$ = function (
-  this: HTMLElement,
-  selector: string
-): NodeListOf<HTMLElement> {
-  return this.querySelectorAll(selector);
-};
 
 export function debounce<T extends (...args: any[]) => void>(
   callback: T,
@@ -102,7 +104,7 @@ export class CustomEventElementClass<T> {
   }
 }
 
-export class CSSVariablesManager {
+export class CSSVariablesManager<T = Record<string, string>> {
   constructor(private element: HTMLElement) {}
 
   private formatName(name: string) {
@@ -112,12 +114,12 @@ export class CSSVariablesManager {
     return `--${name}`;
   }
 
-  set(name: string, value: string) {
-    this.element.style.setProperty(`--${this.formatName(name)}`, value);
+  set(name: keyof T, value: string) {
+    this.element.style.setProperty(this.formatName(name as string), value);
   }
 
-  get(name: string) {
-    return this.element.style.getPropertyValue(`--${this.formatName(name)}`);
+  get(name: keyof T) {
+    return this.element.style.getPropertyValue(this.formatName(name as string));
   }
 }
 
@@ -133,7 +135,7 @@ export class AbortControllerManager {
   }
 }
 
-export class LocalStorage<T extends Record<string, any>> {
+export class LocalStorageBrowser<T extends Record<string, any>> {
   constructor(private prefix: string = "") {}
 
   private getKey(key: keyof T & string): string {
@@ -157,8 +159,3 @@ export class LocalStorage<T extends Record<string, any>> {
     window.localStorage.clear();
   }
 }
-
-const localStorage = new LocalStorage<{
-  name: string;
-  age: number;
-}>("userdata:");

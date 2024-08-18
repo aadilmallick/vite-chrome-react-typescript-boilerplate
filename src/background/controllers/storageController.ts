@@ -4,4 +4,4 @@ export const appStorage = new LocalStorage({});
 export const appSettingsStorage = new SyncStorage({});
 
 // define static methods here
-export class Handler {}
+export class StorageHandler {}

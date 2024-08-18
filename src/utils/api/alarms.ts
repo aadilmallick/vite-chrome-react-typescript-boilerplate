@@ -33,6 +33,7 @@ export class ChromeAlarm {
     };
     this.alarmCB = alarmCB;
     chrome.alarms.onAlarm.addListener(alarmCB);
+    return alarmCB;
   }
 
   /**
