@@ -38,29 +38,39 @@
 //   }
 // }
 
-export abstract class ChromeStorage<T extends Record<string, any>> {
+export abstract class ChromeStorage<
+  T extends Record<string, any> = Record<string, any>
+> {
   constructor(
-    protected defaultData: T,
     protected storage:
       | chrome.storage.SyncStorageArea
-      | chrome.storage.LocalStorageArea
+      | chrome.storage.LocalStorageArea,
+    protected defaultData?: T
   ) {
     this.storage = storage;
+    this.setup();
   }
 
   async setup() {
-    const data = await this.storage.get(this.getKeys());
+    if (!this.defaultData) return;
+    console.info("Setting up storage...");
+    const data = await this.storage.get(null);
     if (!data || Object.keys(data).length === 0) {
       await this.storage.set(this.defaultData);
     }
+    console.info("Storage setup complete");
   }
 
   async getAll() {
-    const data = await this.storage.get(this.getKeys());
+    const data = await this.storage.get(null);
     return data as T;
   }
 
-  getKeys() {
+  async getKeys() {
+    if (!this.defaultData) {
+      const data = await this.storage.get(null);
+      return Object.keys(data) as (keyof T)[];
+    }
     return Object.keys(this.defaultData) as (keyof T)[];
   }
 
@@ -112,17 +122,17 @@ export abstract class ChromeStorage<T extends Record<string, any>> {
 }
 
 export class SyncStorage<
-  T extends Record<string, any>
+  T extends Record<string, any> = Record<string, any>
 > extends ChromeStorage<T> {
-  constructor(defaultData: T) {
-    super(defaultData, chrome.storage.sync);
+  constructor(defaultData?: T) {
+    super(chrome.storage.sync, defaultData);
   }
 }
 
 export class LocalStorage<
-  T extends Record<string, any>
+  T extends Record<string, any> = Record<string, any>
 > extends ChromeStorage<T> {
-  constructor(defaultData: T) {
-    super(defaultData, chrome.storage.local);
+  constructor(defaultData?: T) {
+    super(chrome.storage.local, defaultData);
   }
 }
