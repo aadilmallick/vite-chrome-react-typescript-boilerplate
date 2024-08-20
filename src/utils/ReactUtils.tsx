@@ -5,9 +5,9 @@ import { ChromeStorage } from "./api/storage";
 import { CSSVariablesManager } from "./vanillajs-utils/domUtils";
 import PageLoader from "./vanillajs-utils/loaders/PageLoader";
 
-export function injectRoot(app: React.ReactNode) {
+export function injectRoot(app: React.ReactNode, id?: string) {
   const root = document.createElement("div");
-  root.id = "crx-root";
+  root.id = id || "crx-root";
   document.body.append(root);
 
   createRoot(root).render(<React.StrictMode>{app}</React.StrictMode>);
@@ -26,16 +26,26 @@ export function createAppWithPageLoader(
   pageLoader.loadPage();
 }
 
-export function useObjectState<T extends Record<string, any>>(
-  initialState: T
-): [T, (newState: Partial<T>) => void] {
+export function useObjectState<T extends Record<string, any>>(initialState: T) {
   const [state, setState] = React.useState(initialState);
 
   const setPartialState = React.useCallback((newState: Partial<T>) => {
     setState((prevState) => ({ ...prevState, ...newState }));
   }, []);
 
-  return [state, setPartialState];
+  const getValue = React.useCallback(function (key: keyof T) {
+    return state[key];
+  }, []);
+
+  const setValue = React.useCallback(function (
+    key: keyof T,
+    value: T[keyof T]
+  ) {
+    setState((prevState) => ({ ...prevState, [key]: value }));
+  },
+  []);
+
+  return { state, setPartialState, getValue, setValue };
 }
 
 export function useGetCurrentTab() {
@@ -89,6 +99,26 @@ export function useChromeStorage<
     }
 
     getValue();
+  }, []);
+
+  React.useEffect(() => {
+    const handleChange = async (changes: {
+      [key: string]: chrome.storage.StorageChange;
+    }) => {
+      const keys = await storage.getKeys();
+      if (keys.includes(key)) {
+        const thing = changes[key as string];
+        if (!thing) return;
+        setValue(thing.newValue);
+      }
+    };
+    // Set up listener for changes
+    chrome.storage.onChanged.addListener(handleChange);
+
+    // Clean up listener on unmount
+    return () => {
+      chrome.storage.onChanged.removeListener(handleChange);
+    };
   }, []);
 
   async function setValueAndStore(newValue: T[K]) {

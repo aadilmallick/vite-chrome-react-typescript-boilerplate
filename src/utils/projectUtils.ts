@@ -11,6 +11,24 @@ export function getButtonAccessibilityProps<T>(cb: () => void) {
   };
 }
 
+export async function withTryCatch<T = void>({
+  catchFn,
+  tryFn,
+  finallyFn,
+}: {
+  tryFn: () => T | Promise<T>;
+  catchFn: (error: any) => void;
+  finallyFn?: () => void;
+}) {
+  try {
+    return await tryFn();
+  } catch (e) {
+    catchFn(e);
+  } finally {
+    finallyFn?.();
+  }
+}
+
 export class DateModel {
   /**
    *
@@ -33,5 +51,18 @@ export class DateModel {
     const hours = `${date.getHours()}`.padStart(2, "0");
     const minutes = `${date.getMinutes()}`.padStart(2, "0");
     return `${hours}:${minutes}`;
+  }
+
+  static militaryToStandardTime(militaryTime: string) {
+    const [hours, minutes] = militaryTime.split(":");
+    let hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hour = hour % 12 || 12;
+
+    // Format the time string
+    const formattedTime = `${hour}:${minutes.padStart(2, "0")} ${ampm}`;
+    return formattedTime;
   }
 }

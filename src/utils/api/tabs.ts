@@ -75,6 +75,16 @@ export default class Tabs {
       await chrome.tabs.setZoom(tabId, 0);
     },
   };
+
+  static Events = {
+    onTabNavigateComplete(cb: (tabId: number, tab: chrome.tabs.Tab) => void) {
+      chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        if (changeInfo.status === "complete") {
+          cb(tabId, tab);
+        }
+      });
+    },
+  };
 }
 
 export class TabModel {
@@ -125,29 +135,4 @@ export class TabModel {
     if (!this.tab?.id) throw new Error("Tab id not found");
     await chrome.tabs.remove(this.tab.id);
   }
-}
-
-export class TabAPI {
-  /**
-   * when url of the current tab is updated
-   */
-  static onTabUpdated = chrome.tabs.onUpdated.addListener.bind(
-    chrome.tabs.onUpdated
-  );
-
-  /**
-   * when a tab is created
-   */
-  static onTabCreated = chrome.tabs.onCreated.addListener.bind(
-    chrome.tabs.onCreated
-  );
-
-  /**
-   * when a user navigates to a new tab
-   */
-  static onTabActivated = chrome.tabs.onActivated.addListener.bind(
-    chrome.tabs.onActivated
-  );
-
-  static createTab = chrome.tabs.create.bind(chrome.tabs);
 }

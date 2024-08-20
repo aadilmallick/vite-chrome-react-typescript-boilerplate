@@ -1,9 +1,12 @@
 import { MessagesOneWay } from "app/utils/api/messages";
 
-export const tabPayloadChannel = new MessagesOneWay<{
-  tabId: number;
+export const blockChannel = new MessagesOneWay<{
   url: string;
-}>("tab-payload");
+}>("block");
+
+export const focusModeChannel = new MessagesOneWay<{
+  url: string;
+}>("focus");
 
 // define static methods here
 export class MessageHandler {}
