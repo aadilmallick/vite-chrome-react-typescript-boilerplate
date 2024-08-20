@@ -1,0 +1,11 @@
+.container {
+  position: fixed;
+  height: 2rem;
+  width: 2rem;
+  padding: 1rem;
+  color: white;
+  background-color: red;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+}
