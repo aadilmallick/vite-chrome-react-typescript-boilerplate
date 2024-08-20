@@ -105,7 +105,10 @@ export function useChromeStorage<
     const handleChange = async (changes: {
       [key: string]: chrome.storage.StorageChange;
     }) => {
-      const keys = await storage.getKeys();
+      let keys = storage.getKeys();
+      if (keys.length === 0) {
+        keys = await storage.getAllKeys();
+      }
       if (keys.includes(key)) {
         const thing = changes[key as string];
         if (!thing) return;
