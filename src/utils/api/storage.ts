@@ -115,7 +115,7 @@ export abstract class ChromeStorage<
   }
 
   onChanged(
-    callback: (change: chrome.storage.StorageChange, key: string) => void
+    callback: (change: chrome.storage.StorageChange, key: keyof T) => void
   ) {
     type StorageCallback = (
       changes: {
@@ -130,8 +130,10 @@ export abstract class ChromeStorage<
       }
       if (namespace === this.areaName) {
         for (const key in changes) {
-          const change = changes[key];
-          callback(change, key);
+          if (keys.includes(key)) {
+            const change = changes[key];
+            callback(change, key as keyof T);
+          }
         }
       }
     };
